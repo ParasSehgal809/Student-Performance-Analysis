@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Architecture Flow Diagram - Student Performance Analysis System</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .header {
+      text-align: center;
+      max-width: 900px;
+      margin-bottom: 30px;
+    }
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1e1b4b;
+      margin-bottom: 8px;
+    }
+    .header p {
+      color: #64748b;
+      font-size: 1rem;
+      margin: 0;
+    }
+    .card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+      max-width: 1300px;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .mermaid {
+      display: flex;
+      justify-content: center;
+    }
+    .footer {
+      margin-top: 30px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #94a3b8;
+    }
+    .badge {
+      display: inline-block;
+      background: #e0f2fe;
+      color: #0369a1;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+    @media print {
+      body { background: white; padding: 0; }
+      .card { box-shadow: none; border: none; padding: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="badge">College Mini Project Architecture</div>
+    <h1>Student Performance Analysis System</h1>
+    <p>System Flow & Data Pipeline Diagram (R Language & R Shiny)</p>
+  </div>
+
+  <div class="card">
+    <div class="mermaid">
+flowchart TD
+    %% Styling Configuration matching user reference aesthetic
+    classDef default fill:#f0f7ff,stroke:#bae6fd,stroke-width:1.5px,color:#0369a1,rx:8px,ry:8px;
+    classDef topNode fill:#e0f2fe,stroke:#7dd3fc,stroke-width:2px,color:#0284c7,font-weight:bold,rx:10px,ry:10px;
+    classDef engineNode fill:#e0e7ff,stroke:#a5b4fc,stroke-width:2px,color:#4338ca,font-weight:bold,rx:10px,ry:10px;
+    classDef outputNode fill:#ecfdf5,stroke:#a7f3d0,stroke-width:1.5px,color:#047857,rx:8px,ry:8px;
+    classDef sideNode fill:#f8fafc,stroke:#cbd5e1,stroke-width:1.5px,color:#475569,stroke-dasharray: 4 4,rx:8px,ry:8px;
+
+    User["User / Student Evaluator"]:::topNode
+    ShinyUI["Shiny Web Interface (app.R)"]:::topNode
+    Auth["Authentication & Session Management"]:::topNode
+    Creds["Fixed Demo Credentials<br/>(admin / admin123)"]:::sideNode
+    Server["Reactive Server Engine"]:::engineNode
+
+    User --> ShinyUI
+    ShinyUI --> Auth
+    Auth --> Creds
+    Auth --> Server
+
+    %% Left Branch: Data Ingestion & Quality Analysis
+    Ingest["Data Ingestion & Validation"]
+    OrigData["Original Dataset (student_data.csv)"]
+    WorkingData["Working Dataset (30 Student Records)"]
+    LoopEngine["R Concept: For Loop Engine"]
+    QualityEngine["Data Analysis & Quality Assessment Engine"]:::engineNode
+
+    Server --> Ingest
+    Ingest --> OrigData
+    OrigData --> WorkingData
+    WorkingData --> LoopEngine
+    LoopEngine --> QualityEngine
+    Server --> QualityEngine
+
+    DimCheck["Dataset Dimensions dim()"]
+    StrCheck["Dataset Structure str() & glimpse()"]
+    StatsOps["Mathematical Operations<br/>(Mean, Median, Min, Max, SD)"]
+    OutlierCheck["IQR Outlier Detection<br/>(Lower & Upper Fences)"]
+    LoopOutput["Performance & Grade Categorization<br/>(for loop output)"]
+
+    QualityEngine --> DimCheck
+    QualityEngine --> StrCheck
+    QualityEngine --> StatsOps
+    QualityEngine --> OutlierCheck
+    QualityEngine --> LoopOutput
+
+    %% Right Branch: Regression Modeling, Visualizations & Reporting
+    RegEngine["Linear Regression Engine lm()"]:::engineNode
+    ModelFit["Model Fitting: Marks ~ Study_Hours"]
+    RegSummary["Regression Summary, Coefficients & R²"]
+    Predictor["Interactive Mark & Grade Predictor"]
+
+    VizEngine["Data Visualization Engine"]:::engineNode
+    DashboardResults["Dashboard KPI Cards & Explorer"]:::outputNode
+    CSVReports["CSV Report Export Handler"]:::outputNode
+
+    Server --> RegEngine
+    Server --> VizEngine
+
+    RegEngine --> ModelFit
+    ModelFit --> RegSummary
+    ModelFit --> Predictor
+
+    VizOps["Base R Graphical Plots"]
+    VizEngine --> VizOps
+
+    HistPlot["Histogram of Marks<br/>(Mean & Median Lines)"]
+    BoxPlot["Boxplot of Marks<br/>(Quartiles & Bounds)"]
+    ScatterPlot["Scatter Plot: Hours vs Marks<br/>(Fitted lm Line)"]
+    BarPlot["Bar Chart: Student Performance<br/>(Grade Distribution)"]
+
+    VizOps --> HistPlot
+    VizOps --> BoxPlot
+    VizOps --> ScatterPlot
+    VizOps --> BarPlot
+
+    VizOps --> DashboardResults
+    Predictor --> DashboardResults
+    VizEngine --> CSVReports
+    DashboardResults --> DownloadReports["Downloadable Reports (student_data.csv)"]:::outputNode
+    CSVReports --> DownloadReports
+    </div>
+  </div>
+
+  <div class="footer">
+    Student Performance Analysis System &bull; R Language & R Shiny &bull; Built with Mermaid
+  </div>
+
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'neutral',
+      flowchart: {
+        curve: 'basis',
+        nodeSpacing: 45,
+        rankSpacing: 45,
+        useMaxWidth: true
+      }
+    });
+  </script>
+</body>
+</html>
